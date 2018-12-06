@@ -37,7 +37,7 @@ public class GuessEvaluator {
 	 */
 	public int[] evaluate(int[] guess) {
 		if(guess.length != secretCode.length) return null;
-		int[] h = new int[secretCode.length];
+		int[] h = new int[2];
 		Arrays.fill(h, EMPTY);		
 		// TODO logic for evaluation.
 		

@@ -24,10 +24,7 @@ public class MasterMindGame{
 		GuessEvaluator evaluator = new GuessEvaluator(SecretCodeGenerator.generate(codeLen,colors), colors);
 		MasterMindPlayer player = new MasterMindPlayer(codeLen,colors);
 		
-		/**
-		 * TODO to decide if hints needs to be array of empty, match, color-matches or it can be just count of color matches and exact matches as a class. 
-		 */
-		int[] hints = new int[codeLen];
+		int[] hints = new int[2];
 		
 		/** Setting default empty hints **/
 		Arrays.fill(hints, 0); 
