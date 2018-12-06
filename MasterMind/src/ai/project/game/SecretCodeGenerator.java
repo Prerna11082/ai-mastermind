@@ -15,7 +15,7 @@ public class SecretCodeGenerator {
 		int[] code = new int[codeLen];
 		int i = 0;
 		while(i < codeLen) {
-			code[i]= (int)(Math.random() * colors + 1);
+			code[i]= (int)(Math.random() * (colors - 1) + 1);
 			i++;
 		}
 		return code;

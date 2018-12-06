@@ -1,5 +1,6 @@
 package ai.project.player;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -8,51 +9,72 @@ import java.util.List;
 
 import ai.project.common.GuessEvaluator;
 
+/**
+ * @author shamalip,AdityaN,PrernaSingh
+ *	The AI 
+ */
 public class MasterMindPlayer {
 	private int colors;
 	private int codeLen;
 	private Set<int[]> allGuesses;
 	private List<int[]> possibleHints;
-	private int[] lastGuess = new int[codeLen];
-	private int[] lastHint = new int[2];
+	private int[] lastGuess = null;
 
 	public MasterMindPlayer(int codeLen, int colors) {
 		this.codeLen = codeLen;
 		this.colors = colors;
-		// generate the set of all guesses for given colors & codeLen
-		allGuesses = generateAllGuesses();
+		/** generate the set of all guesses for given colors & codeLen **/
+		generateAllGuesses();
+		generateAllPossibleHints();
 	}
+
+	/**
+	 * Generate an list of all possible hints so as to refer them in min-max algorithm.
+	 *
+	 **/
+	private void generateAllPossibleHints() {
+        possibleHints = new ArrayList<>();
+         for(int i=0;i<=codeLen;i++) {
+        	for(int j=0; j<=codeLen; j++) {
+        		if(!(j == codeLen - 1 && i == 1) && i + j <= codeLen) {
+        			int[] hintItem = new int[2];
+        			hintItem[0] = i;
+            		hintItem[1] = j; 
+            		possibleHints.add(hintItem);           		
+        		}        		
+        	}
+        }
+    }
 
 	/***
 	 * Generates all possible guess that can later be eliminated.
-	 * @return
-	 */
-	private Set<int[]> generateAllGuesses() {
-		Set<int[]> allGuesses = new HashSet<>();
+	 *
+	 **/
+	private void generateAllGuesses() {
+		allGuesses = new HashSet<>();
 		int[] guess = new int[codeLen];
 
-		// iterate colors^codeLen times
+		/** iterate colors^codeLen times **/
 		for (int i = 0; i < Math.pow(colors, codeLen); ++i) {
 
 			int[] copyOfGuess = new int[guess.length];
 			System.arraycopy(guess, 0, copyOfGuess, 0, guess.length);
 
-			// adding the copy of the current guess
+			/** adding the copy of the current guess **/
 			allGuesses.add(copyOfGuess);
 
-			// increment the last element by 1
+			/** increment the last element by 1 **/
 			++guess[guess.length - 1];
 
-			// iterate over each "column" from right to left
+			/** iterate over each "column" from right to left **/
 			for (int j = codeLen - 1; j > 0; --j) {
-				// if we exceed our numeric base set it back to zero and increment the column to the left
+				/*** if we exceed our numeric base set it back to zero and increment the column to the left **/
 				if (guess[j] == colors) {
 					guess[j] = 0;
 					++guess[j - 1];
 				}
 			}
 		}
-		return allGuesses;
 	}
 
 	/**
@@ -62,11 +84,12 @@ public class MasterMindPlayer {
 	 */
 	public int[] guess(int[] hint) {
 		if(null != lastGuess) {
-			Set<int[]> filteredGuesses = filterGuessesBasedOnHint(hint);	
-			lastGuess = applyMinMax(filteredGuesses); 
+			filterGuessesBasedOnHint(hint);	
+			lastGuess = applyMinMax(); 
 		}else {
+			lastGuess = new int[codeLen];
 			for(int i=0; i < codeLen; i++) {
-				lastGuess[i] = i > (codeLen/2) ? 0 : 1; 
+				lastGuess[i] = i >= (codeLen/2) ? 0 : 1; 
 			}
 		}
 		return lastGuess;
@@ -76,33 +99,31 @@ public class MasterMindPlayer {
 	 * @param hint
 	 * @return
 	 */
-	private Set<int[]> filterGuessesBasedOnHint(int[] hint) {
-		Set<int[]> filteredGuesses = new HashSet<int[]>(allGuesses);
-		Iterator<int[]> iterator = filteredGuesses.iterator();
+	private  void filterGuessesBasedOnHint(int[] hint) {
+		Iterator<int[]> iterator = allGuesses.iterator();
 		while(iterator.hasNext()) {
 			int[] possibleGuess = iterator.next();
-			if (GuessEvaluator.getColorCorrectPositionIncorrect(possibleGuess, lastGuess)!= lastHint[0] || GuessEvaluator.getColorCorrectPositionCorrect(possibleGuess, lastGuess)!= lastHint[1]) {
+			if (GuessEvaluator.getColorCorrectPositionIncorrect(possibleGuess, lastGuess) != hint[0] || GuessEvaluator.getColorCorrectPositionCorrect(possibleGuess, lastGuess)!= hint[1]) {
 				iterator.remove();
 			}
 		}
-		return filteredGuesses;
 	}
 
 
 	/**
 	 * The method returns a guess value by applying minmax algorithm in such a way that next time the hint will be able to provide more information (narrows possibilities for next step).
-	 * @param filteredGuesses
+	 * @param allGuesses
 	 * @return
 	 */
-	private int[] applyMinMax(Set<int[]> filteredGuesses) {
+	private int[] applyMinMax() {
 		int min = Integer.MAX_VALUE;
 		int[] guessToNarrowNextPossibilties = new int[codeLen];
 		int[] hint = new int[2];
-		for (int[] guess : filteredGuesses) {
+		for (int[] guess : allGuesses) {
 			int max = 0;
 			for (int[] possibleHint : possibleHints) {
 				int count = 0;
-				for (int[] solution : filteredGuesses) {
+				for (int[] solution : allGuesses) {
 					hint[0] = GuessEvaluator.getColorCorrectPositionIncorrect(guess, solution);
 					hint[1] = GuessEvaluator.getColorCorrectPositionCorrect(guess, solution);
 					if (Arrays.equals(hint, possibleHint))  count++;

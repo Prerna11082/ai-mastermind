@@ -8,25 +8,19 @@ public class GuessEvaluator {
 	
 	private static final int EMPTY = 0;
 	private int[] secretCode;
-	private int colors;
 	
-	private Map<Integer,Integer> colorMap = new HashMap<Integer,Integer>();
 	
 	/** TODO Think about what will be stores as status - whether there was a win/lose instead of just a plain boolean flag.
 	 * Do we need to constrain the number of steps/guess allowed?
 	 */
-	private boolean gameOver;
+	private boolean foundAnswer;
 	
 	/**
 	 * Constructor: code can be set only once i.e. during instantiation.
 	 * @param code
 	 */
-	public GuessEvaluator(int[] code, int colors) {
+	public GuessEvaluator(int[] code) {
 		secretCode = code;
-		this.colors = colors;
-		for(int c: code) {
-			colorMap.put(c, null != colorMap.get(c) ? colorMap.get(c) + 1: 1);
-		}
 	}
 		
 	/**
@@ -40,54 +34,39 @@ public class GuessEvaluator {
 		int[] h = new int[2];
 		Arrays.fill(h, EMPTY);		
 		// TODO logic for evaluation.
-		h[0] = getColorCorrectPositionCorrect(guess, secretCode);
-		h[1] = getColorCorrectPositionIncorrect(guess, secretCode);
-		if (h[0] == secretCode.length) {
-			gameOver = true;
+		h[1] = getColorCorrectPositionCorrect(guess, secretCode);
+		h[0] = getColorCorrectPositionIncorrect(guess, secretCode);
+		if (h[1] == secretCode.length) {
+			foundAnswer = true;
 		}
 		return h;
 	}
 	
 	/***
-	 * check for number of correct colors but in incorrect position form the guess
+	 * check for number of correct colors but in incorrect position from the guess
 	 * @param guess
 	 * @param secretCode
 	 * @return
 	 */
     public static int getColorCorrectPositionIncorrect(int[] guess, int[] secretCode) {
-        int count = 0;
-        int[] guessA = new int[guess.length];
-        int[] secretA = new int[secretCode.length];
-        
-        // create a copy of the two input arrays
-        System.arraycopy(guess, 0, guessA, 0, guess.length);
-        System.arraycopy(secretCode, 0, secretA, 0, secretCode.length);
-        
-        // check each of the items in corresponding positions
-        for (int i = 0; i < guess.length; ++i) {
-        	// if they are the same, i.e. in the correct position
-            if (guessA[i] == secretA[i]) {
-            	// mark as dealt with (since blacks() handles that) by subtracting the current iteration and an arbitrary sufficiently different value from each
-                guessA[i] = 0 - i - 50;
-                secretA[i] = 0 - i - 100;
-            }
-        }
-        
-        // compare each item in oneA to every item in twoA
-        for (int i = 0; i < guess.length; ++i) {
-            for (int j = 0; j < guess.length; ++j) {
-            	// don't want to check items at the same index - we did that earlier - only ones in different positions
-                if (i != j && guessA[i] == secretA[j]) {
-                	// increment the counter of whites
-                    ++count;
-                    // mark each one as dealt with
-                    guessA[i] = 0 - i - 50;
-                    secretA[j] = 0 - j - 100;
-                    break;
-                }
-            }
-        }
-        return count;
+    	int count = 0;
+    	Map<Integer,Integer> secColorCount = new HashMap<Integer,Integer>();
+    	/** Create a map of color counts in the secret **/
+    	for(int secret: secretCode) {
+    		secColorCount.put(secret, secColorCount.getOrDefault(secret,0)+1);
+    	}
+    	
+    	/** Check against the map, the number of misplaced colors in guess **/
+    	for(int i = 0; i< guess.length; i++) {
+    		int curr = guess[i];
+    		if(curr != secretCode[i] && null != secColorCount.get(curr) && secColorCount.get(curr)!=0) {
+    			count++;
+    		}
+    		if(null != secColorCount.get(curr)) {
+    			secColorCount.put(curr,secColorCount.get(curr)-1);
+    		}
+    	}
+    	return count;	
     }
     
     /***
@@ -109,11 +88,11 @@ public class GuessEvaluator {
     }
 	
 	/**
-	 * Returns the game status.
+	 * return true if an answer was already guessed correctly.
 	 * @return
 	 */
-	public boolean isGameOver() {
-		return gameOver;
+	public boolean isFoundAnswer() {
+		return foundAnswer;
 	}
 	
 }
