@@ -1,7 +1,5 @@
 package ai.project.player;
 
-import ai.project.game.Hints;
-
 public class MasterMindPlayer {
 	private int colors;
 	private int codeLen;
@@ -11,7 +9,7 @@ public class MasterMindPlayer {
 		this.colors = colors;
 	}
 
-	public int[] guess(Hints[] hints) {
+	public int[] guess(int[] hints) {
 		
 		return null;
 	}

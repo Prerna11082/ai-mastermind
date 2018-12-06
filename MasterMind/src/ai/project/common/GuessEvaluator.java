@@ -1,4 +1,4 @@
-package ai.project.game;
+package ai.project.common;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -6,6 +6,7 @@ import java.util.Map;
 
 public class GuessEvaluator {
 	
+	private static final int EMPTY = 0;
 	private int[] secretCode;
 	private int colors;
 	
@@ -29,29 +30,16 @@ public class GuessEvaluator {
 	}
 		
 	/**
-	 * TODO To test and update accordingly. 
+	 * TODO check black and whites. 
 	 * Compares the guess with the secret and generates a sequence of hints and updates the status (gameOver) of the game.
 	 * @param guess
 	 * @return
 	 */
-	public Hints[] evaluate(int[] guess) {
+	public int[] evaluate(int[] guess) {
 		if(guess.length != secretCode.length) return null;
-		Hints[] h = new Hints[secretCode.length];
-		Arrays.fill(h, Hints.EMPTY);
-		boolean[] visited = new boolean[colors];
-		
-		int j = 0;
-		for(int i = 0; i < guess.length; i++) {
-			if(secretCode[i] == guess[i]) {
-				h[j] = Hints.MATCH;
-				j++;
-			}
-			/** assuming no duplicates allowed. **/
-			else if(!visited[guess[i]] && null != colorMap.get(guess[i])) { /** TODO verify expectation of game hints **/
-				visited[guess[i]] = true;
-				h[j] = Hints.COLORMATCH;
-			}
-		}
+		int[] h = new int[secretCode.length];
+		Arrays.fill(h, EMPTY);		
+		// TODO logic for evaluation.
 		
 		return h;
 	}

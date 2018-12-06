@@ -3,6 +3,7 @@ package ai.project.game;
 import java.util.Arrays;
 import java.util.Scanner;
 
+import ai.project.common.GuessEvaluator;
 import ai.project.player.MasterMindPlayer;
 
 public class MasterMindGame{
@@ -26,10 +27,10 @@ public class MasterMindGame{
 		/**
 		 * TODO to decide if hints needs to be array of empty, match, color-matches or it can be just count of color matches and exact matches as a class. 
 		 */
-		Hints[] hints = new Hints[codeLen];
+		int[] hints = new int[codeLen];
 		
 		/** Setting default empty hints **/
-		Arrays.fill(hints, Hints.EMPTY); 
+		Arrays.fill(hints, 0); 
 		
 		while(!evaluator.isGameOver()) {
 			hints = evaluator.evaluate(player.guess(hints));			
