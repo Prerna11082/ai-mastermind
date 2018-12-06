@@ -33,7 +33,6 @@ public class GuessEvaluator {
 		if(guess.length != secretCode.length) return null;
 		int[] h = new int[2];
 		Arrays.fill(h, EMPTY);		
-		// TODO logic for evaluation.
 		h[1] = getColorCorrectPositionCorrect(guess, secretCode);
 		h[0] = getColorCorrectPositionIncorrect(guess, secretCode);
 		if (h[1] == secretCode.length) {
@@ -77,9 +76,9 @@ public class GuessEvaluator {
      */
     public static int getColorCorrectPositionCorrect(int[] guess, int[] secretCode) {
     	int count = 0;
-    	// iterate over the arrays
+    	/** iterate over the arrays **/
         for (int i = 0; i < guess.length; ++i) {
-        	// if they have the same value at the same point in the array increment the val counter
+        	/** if they have the same value at the same point in the array increment the val counter **/
             if (guess[i] == secretCode[i]) {
                 ++count;
             }

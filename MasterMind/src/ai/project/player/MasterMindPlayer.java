@@ -10,7 +10,7 @@ import java.util.List;
 import ai.project.common.GuessEvaluator;
 
 /**
- * @author shamalip,AdityaN,PrernaSingh
+ * @author shamalip, adityan,prernas
  *	The AI 
  */
 public class MasterMindPlayer {
@@ -117,7 +117,7 @@ public class MasterMindPlayer {
 	 */
 	private int[] applyMinMax() {
 		int min = Integer.MAX_VALUE;
-		int[] guessToNarrowNextPossibilties = new int[codeLen];
+		int[] minimizedGuess = new int[codeLen];
 		int[] hint = new int[2];
 		for (int[] guess : allGuesses) {
 			int max = 0;
@@ -133,10 +133,10 @@ public class MasterMindPlayer {
 			}
 			if (max < min) {
 				min = max;
-				guessToNarrowNextPossibilties = guess;
+				minimizedGuess = guess;
 			}
 		}
-		return guessToNarrowNextPossibilties;
+		return minimizedGuess;
 	}   
 
 }
