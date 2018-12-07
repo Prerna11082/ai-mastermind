@@ -100,6 +100,8 @@ public class MasterMindPlayer {
 	 * @return
 	 */
 	private  void filterGuessesBasedOnHint(int[] hint) {
+		long startTime = System.currentTimeMillis();
+		long initSize = allGuesses.size();
 		Iterator<int[]> iterator = allGuesses.iterator();
 		while(iterator.hasNext()) {
 			int[] possibleGuess = iterator.next();
@@ -107,6 +109,9 @@ public class MasterMindPlayer {
 				iterator.remove();
 			}
 		}
+		long stopTime = System.currentTimeMillis();
+		long finalSize = allGuesses.size();
+	    System.out.println("Reduced guesses from "+initSize+" to "+finalSize+" in: "+(stopTime - startTime)+"ms");
 	}
 
 
@@ -116,6 +121,7 @@ public class MasterMindPlayer {
 	 * @return
 	 */
 	private int[] applyMinMax() {
+		long startTime = System.currentTimeMillis();
 		int min = Integer.MAX_VALUE;
 		int[] minimizedGuess = new int[codeLen];
 		int[] hint = new int[2];
@@ -136,6 +142,8 @@ public class MasterMindPlayer {
 				minimizedGuess = guess;
 			}
 		}
+		long stopTime = System.currentTimeMillis();
+	    System.out.println("Made a guess in "+(stopTime - startTime)+"ms\n");
 		return minimizedGuess;
 	}   
 
