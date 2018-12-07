@@ -11,7 +11,7 @@ import ai.project.common.GuessEvaluator;
 
 /**
  * @author shamalip, adityan,prernas
- *	The AI 
+ *	The AI player implementation.
  */
 public class MasterMindPlayer {
 	private int colors;

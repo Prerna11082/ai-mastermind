@@ -58,10 +58,13 @@ public class GuessEvaluator {
     	/** Check against the map, the number of misplaced colors in guess **/
     	for(int i = 0; i< guess.length; i++) {
     		int curr = guess[i];
-    		if(curr != secretCode[i] && null != secColorCount.get(curr) && secColorCount.get(curr)!=0) {
+    		if(curr != secretCode[i] && null != secColorCount.get(curr) && secColorCount.get(curr)>0) {
     			count++;
     		}
-    		if(null != secColorCount.get(curr)) {
+    		if(curr == secretCode[i] && secColorCount.get(curr) == 0) {
+    			count--;
+    		}
+    		if(null != secColorCount.get(curr) && secColorCount.get(curr) > 0) {
     			secColorCount.put(curr,secColorCount.get(curr)-1);
     		}
     	}
