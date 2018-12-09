@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 import java.util.List;
+import java.util.Set;
 
 import ai.project.common.GuessEvaluator;
 
@@ -75,6 +75,7 @@ public class MasterMindPlayer {
 				}
 			}
 		}
+		System.out.println("****Number of total Possibilities******   "+allGuesses.size());
 	}
 
 	/**
@@ -117,7 +118,9 @@ public class MasterMindPlayer {
 	 */
 	private int[] applyMinMax() {
 		int min = Integer.MAX_VALUE;
+		int cutOff = Integer.MAX_VALUE;
 		int[] minimizedGuess = new int[codeLen];
+		System.out.println("****Number of Possibilities******   "+allGuesses.size());
 		int[] hint = new int[2];
 		for (int[] guess : allGuesses) {
 			int max = 0;
@@ -128,12 +131,16 @@ public class MasterMindPlayer {
 					hint[1] = GuessEvaluator.getColorCorrectPositionCorrect(guess, solution);
 					if (Arrays.equals(hint, possibleHint))  count++;
 				}
+				System.out.println("checking...");
 				if (count > max) max = count;
-
 			}
 			if (max < min) {
+				System.out.println("Count:" + max);
 				min = max;
 				minimizedGuess = guess;
+				if(min/allGuesses.size() < 0.20) {
+					break;
+				}
 			}
 		}
 		return minimizedGuess;
