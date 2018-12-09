@@ -2,11 +2,13 @@ package ai.project.game;
 
 public class SecretCodeGenerator {
 	/**
-	 * TODO Do we provide user an option to set the code as well rather than us generating it? 
-	 * May be the generator can accept a generation strategy instead of forcing random code generation.
-	 * Also need to think about allowing duplicates.
+	 * TODO Do we provide user an option to set the code as well rather than us
+	 * generating it? May be the generator can accept a generation strategy instead
+	 * of forcing random code generation. Also need to think about allowing
+	 * duplicates.
 	 * 
-	 * Method generating the secret code. 
+	 * Method generating the secret code.
+	 * 
 	 * @param codeLen
 	 * @param colors
 	 * @return
