@@ -1,6 +1,7 @@
 package ai.project.player;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,14 +28,16 @@ public class MasterMindPlayer {
 	private long filterTime = 0;
 	private long guessingTime = 0;
 	private long totalTime;
+	private int strategy = 0;
 
 	public long getTotalTime() {
 		return generateGuessTime + filterTime + guessingTime + totalTime;
 	}
 
-	public MasterMindPlayer(int codeLen, int colors) {
+	public MasterMindPlayer(int codeLen, int colors, int str) {
 		this.codeLen = codeLen;
 		this.colors = colors;
+		strategy = str;
 		/** generate the set of all guesses for given colors & codeLen **/
 		generateAllGuesses();
 		generateAllPossibleHints();
@@ -94,10 +97,10 @@ public class MasterMindPlayer {
 				}
 			}
 		}
-		System.out.println("****Number of total Possibilities******   "+allGuesses.size());
+//		System.out.println("****Number of total Possibilities******   "+allGuesses.size());
 		long endTime = System.currentTimeMillis();
 		generateGuessTime = endTime - startTime;
-		System.out.println("Generated All Guesses in: " + generateGuessTime + " ms");
+//		System.out.println("Generated All Guesses in: " + generateGuessTime + " ms");
 	}
 
 	/**
@@ -109,7 +112,11 @@ public class MasterMindPlayer {
 	public int[] guess(int[] hint) {
 		if (null != lastGuess) {
 			filterGuessesBasedOnHint(hint);
-			lastGuess = applyMinMax();
+			if (strategy == 0) {
+				lastGuess = applyMinMax();
+			} else {
+				lastGuess = getRandomGuess();
+			}
 		} else {
 			lastGuess = new int[codeLen];
 			for (int i = 0; i < codeLen; i++) {
@@ -139,9 +146,19 @@ public class MasterMindPlayer {
 		long endTime = System.currentTimeMillis();
 		long finalSize = allGuesses.size();
 		filterTime += endTime - startTime;
-		System.out.println(
-				"Reduced guesses from " + initSize + " to " + finalSize + " in: " + (endTime - startTime) + "ms");
+//		System.out.println(
+//				"Reduced guesses from " + initSize + " to " + finalSize + " in: " + (endTime - startTime) + "ms");
 	}
+	
+	private int[] getRandomGuess() {
+        Iterator<int[]> iterator = allGuesses.iterator();
+        int[] nextGuess = new int[codeLen];
+
+        if (iterator.hasNext()) {
+            nextGuess = iterator.next();
+        }
+        return nextGuess;
+    }
 
 	/**
 	 * The method returns a guess value by applying minimax algorithm in such a way
@@ -156,31 +173,27 @@ public class MasterMindPlayer {
 		int min = Integer.MAX_VALUE;
 		int cutOff = Integer.MAX_VALUE;
 		int[] minimizedGuess = new int[codeLen];
-		System.out.println("****Number of Possibilities******   "+allGuesses.size());
+//		System.out.println("****Number of Possibilities******   "+allGuesses.size());
 		int[] hint = new int[2];
 		for (int[] guess : allGuesses) {
 			int max = 0;
-			// NEW
-			for (int[] solution : allGuesses) {
-				hint = GuessEvaluator.getHint(guess, solution);
-				hintMatrix.put(hint, hintMatrix.getOrDefault(hint, 0) + 1);
+			for (int[] possibleHint : possibleHints) {
+ 				int count = 0;
+ 				for (int[] solution : allGuesses) {
+ 					hint[0] = GuessEvaluator.getColorCorrectPositionIncorrect(guess, solution);
+ 					hint[1] = GuessEvaluator.getColorCorrectPositionCorrect(guess, solution);
+ 					if (Arrays.equals(hint, possibleHint))  count++;
+ 				}
+ 				if (count > max) max = count;
 			}
-			max = maxHintOccurence(hintMatrix);
-			// OLD - BEGIN
-//			 for (int[] possibleHint : possibleHints) {
-//			 int count = 0;
-//			 for (int[] solution : allGuesses) {
-//			 hint[0] = GuessEvaluator.getColorCorrectPositionIncorrect(guess, solution);
-//			 hint[1] = GuessEvaluator.getColorCorrectPositionCorrect(guess, solution);
-//			 if (Arrays.equals(hint, possibleHint))
-//			 count++;
-//			 }
-//			 if (count > max)
-//			 max = count;
-//			 }
-//			 OLD - END
+			// NEW
+//			for (int[] solution : allGuesses) {
+//				hint = GuessEvaluator.getHint(guess, solution);
+//				hintMatrix.put(hint, hintMatrix.getOrDefault(hint, 0) + 1);
+//			}
+//			max = maxHintOccurence(hintMatrix);
+//			System.out.println("Count hello:" + max);
 			if (max < min) {
-				System.out.println("Count:" + max);
 				min = max;
 				minimizedGuess = guess;
 				if(min/allGuesses.size() < 0.20) {
@@ -190,7 +203,7 @@ public class MasterMindPlayer {
 		}
 		long endTime = System.currentTimeMillis();
 		guessingTime += endTime - startTime;
-		System.out.println("Made a guess in " + (endTime - startTime) + "ms\n");
+//		System.out.println("Made a guess in " + (endTime - startTime) + "ms\n");
 		return minimizedGuess;
 	}
 
